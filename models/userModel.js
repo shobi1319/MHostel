@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
   userId: {
@@ -17,11 +18,16 @@ const userSchema = new mongoose.Schema({
   },
   phoneNumber: {
     type: String,
-    required: true, // Ensure this is set to true
+    required: true,
     unique: true,
     match: [/^\+92[0-9]{10}$/, 'Please use a valid Pakistani phone number (e.g., +923001234567)'], // Pakistan phone number validation
   },
-});
+  password: {
+    type: String,
+    required: true,
+    minlength: 6, // Minimum password length requirement
+  },
+}, { timestamps: true }); // Add timestamps to track creation and update times
 
 // Pre-save middleware to generate a unique userId
 userSchema.pre('save', async function (next) {
@@ -32,5 +38,10 @@ userSchema.pre('save', async function (next) {
   }
   next();
 });
+
+// Method to compare input password with hashed password
+userSchema.methods.comparePassword = async function (inputPassword) {
+  return bcrypt.compare(inputPassword, this.password);
+};
 
 module.exports = mongoose.model('User', userSchema);

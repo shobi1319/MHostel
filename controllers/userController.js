@@ -1,23 +1,23 @@
 const User = require('../models/userModel'); // Adjust path if necessary
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // Register User
 const registerUser = async (req, res) => {
   try {
-    // Destructure request body to get user details
-    const { username, email, phoneNumber } = req.body;
+    const { username, email, phoneNumber, password } = req.body;
 
-    // Check if any required field is missing
-    if (!username || !email || !phoneNumber) {
+    if (!username || !email || !phoneNumber || !password) {
       return res.status(400).json({ error: 'All fields are required.' });
     }
 
-    // Check if the phone number matches the Pakistan format
+    // Validate phone number format for Pakistan
     const phoneRegex = /^\+92[0-9]{10}$/;
     if (!phoneRegex.test(phoneNumber)) {
       return res.status(400).json({ error: 'Please use a valid Pakistani phone number (e.g., +923001234567)' });
     }
 
-    // Check if user with the same email or phone number already exists
+    // Check for existing user by email or phone number
     const existingUser = await User.findOne({
       $or: [{ email }, { phoneNumber }],
     });
@@ -26,31 +26,59 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ error: 'User with this email or phone number already exists.' });
     }
 
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Create a new user
-    const newUser = new User({ username, email, phoneNumber });
+    const newUser = new User({
+      username,
+      email,
+      phoneNumber,
+      password: hashedPassword,
+    });
     await newUser.save();
 
-    // Respond with success message
     res.status(201).json({ message: 'User registered successfully!' });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while registering the user.' });
   }
 };
 
-// Update onboarding status
-const updateOnboardingStatus = async (req, res) => {
+// Login User
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findOne({ email });
+
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({
+        message: 'User not found',
+        success: false,
+      });
     }
-    user.hasSeenOnboarding = true;
-    await user.save();
-    res.json({ message: 'Onboarding status updated', user });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        message: 'Invalid password',
+        success: false,
+      });
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(200).json({
+      message: 'Login successful',
+      success: true,
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+    });
   }
 };
 
@@ -70,6 +98,6 @@ const getUserByEmail = async (req, res) => {
 
 module.exports = {
   registerUser,
-  updateOnboardingStatus,
-  getUserByEmail
+  loginUser,
+  getUserByEmail,
 };

@@ -1,12 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { registerUser, updateOnboardingStatus, getUserByEmail } = require('../controllers/userController');  // Ensure correct path
+const { 
+  registerUser, 
+  loginUser, // New login function
+  getUserByEmail 
+} = require('../controllers/userController'); // Ensure correct path
 
 // Register a new user
 router.post('/register', registerUser);
 
-// Update onboarding status for a user
-router.put('/onboarding/:id', updateOnboardingStatus);
+// User login
+router.post('/login', loginUser); // Added login route
 
 // Fetch a user by email
 router.get('/user', getUserByEmail);

@@ -1,7 +1,7 @@
 const User = require('../models/userModel'); // Adjust path if necessary
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const menu = require('../models/menuModel'); 
 // Register User
 const registerUser = async (req, res) => {
   try {
@@ -96,8 +96,45 @@ const getUserByEmail = async (req, res) => {
   }
 };
 
+
+// Fetch Menu for a Specific Day or All Days
+const Menu = require('../models/menuModel'); // Adjust the path to your model file
+
+const getMenu = async (req, res) => {
+  try {
+    // Fetch the entire week's menu from the Menu collection
+    const menu = await Menu.find({});
+
+    // Check if the menu exists
+    if (!menu || menu.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Menu for the week not found.',
+      });
+    }
+
+    // Send the menu in response
+    res.status(200).json({
+      success: true,
+      menu,
+    });
+  } catch (error) {
+    console.error('Error fetching menu:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve menu.',
+      error: error.message,
+    });
+  }
+};
+
+module.exports = {
+  getMenu,
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getUserByEmail,
+  getMenu,
 };

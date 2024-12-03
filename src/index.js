@@ -8,7 +8,9 @@ connectDB();  // Connect to MongoDB
 
 const app = express();
 app.use(express.json());  // Middleware to parse JSON requests
-app.use(require('cors')());  // Enable CORS
+ // Enable CORS
+const cors = require('cors');
+app.use(cors());
 
 // API Routes
 app.use('/api/users', userRoutes);  // User routes

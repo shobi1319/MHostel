@@ -13,7 +13,7 @@
       }
     ],
     "env": {
-      "MONGODB_URI": "mongodb+srv://shoaib:123321@123$MSM@digiplant.ymy9o.mongodb.net/Digiplant?retryWrites=true&w=majority&appName=DigiPlant",
+      "MONGODB_URI": "mongodb+srv://shoaib:123321@123$MSM@digiplant.ymy9o.mongodb.net/Digiplant?retryWrites=true&w=majority&appName=MHostel",
       "JWT_SECRET": "1319@"
     }
   }

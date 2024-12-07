@@ -2,7 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');  // Adjusted path
 const userRoutes = require('./routes/userRoutes');  // Adjusted path
-
+const managerRoutes = require('./routes/managerRoutes');
 dotenv.config();  // Load environment variables
 connectDB();  // Connect to MongoDB
 
@@ -14,7 +14,7 @@ app.use(cors());
 
 // API Routes
 app.use('/api/users', userRoutes);  // User routes
-
+app.use('/api/manager', managerRoutes);  // Manager routes
 // Root Route
 app.get('/', (req, res) => {
   res.send('API is running...');

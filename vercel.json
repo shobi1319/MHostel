@@ -12,9 +12,10 @@
         "dest": "src/index.js"
       }
     ],
-    "env": {
-      "MONGODB_URI": "mongodb+srv://shoaib:123321@123$MSM@digiplant.ymy9o.mongodb.net/Digiplant?retryWrites=true&w=majority&appName=DigiPlant",
-      "JWT_SECRET": "1319@"
-    }
+  "env": {
+  "MONGODB_URI": "mongodb+srv://shoaib:123321@123$MSM@digiplant.ymy9o.mongodb.net/mhostel?retryWrites=true&w=majority&appName=DigiPlant",
+  "JWT_SECRET": "1319@"
+}
+
   }
   
